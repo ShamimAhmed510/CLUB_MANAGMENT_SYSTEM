@@ -31,6 +31,7 @@ import {
   serializeNotice,
   serializePost,
 } from "../lib/serializers.js";
+import { sendJoinRequestNotification, emailEnabled } from "../lib/email.js";
 import bcrypt from "bcryptjs";
 
 const router: IRouter = Router();
@@ -506,6 +507,43 @@ router.post(
       message: parsed.data.message ?? null,
       status: "pending",
     });
+
+    // Fire-and-forget email to club admins
+    if (emailEnabled) {
+      (async () => {
+        try {
+          const adminRoles = ["president", "vice_president", "secretary"];
+          const adminMemberships = await Membership.find({ clubId }).lean();
+          const adminMems = adminMemberships.filter((m: any) =>
+            adminRoles.includes(m.role as string),
+          );
+          const adminUserIds = adminMems.map((m: any) => s(m.userId));
+          const adminUsers = await User.find({ _id: { $in: adminUserIds } }).lean();
+
+          const domains = (process.env["REPLIT_DOMAINS"] ?? "").split(",")[0]?.trim() ?? "";
+          const frontendUrl = process.env["FRONTEND_URL"] ?? "";
+          const base = domains ? `https://${domains}` : frontendUrl;
+          const portalUrl = `${base}/dashboard`;
+
+          for (const adminUser of adminUsers) {
+            await sendJoinRequestNotification({
+              adminEmail: (adminUser as any).email as string,
+              adminName: (adminUser as any).fullName as string,
+              studentName: user.fullName,
+              studentEmail: user.email,
+              studentId: user.studentId,
+              department: user.department,
+              clubName: (club as any).name,
+              message: parsed.data.message ?? null,
+              portalUrl,
+            });
+          }
+        } catch {
+          // email failure should not affect the response
+        }
+      })();
+    }
+
     res.status(201).json(
       serializeJoinRequest({
         id: created._id.toString(),

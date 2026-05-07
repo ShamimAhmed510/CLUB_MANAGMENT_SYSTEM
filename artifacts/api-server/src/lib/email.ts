@@ -43,3 +43,55 @@ export async function sendPasswordResetEmail(
     `,
   });
 }
+
+export async function sendJoinRequestNotification(opts: {
+  adminEmail: string;
+  adminName: string;
+  studentName: string;
+  studentEmail: string;
+  studentId: string | null;
+  department: string | null;
+  clubName: string;
+  message: string | null;
+  portalUrl: string;
+}): Promise<void> {
+  if (!emailEnabled) return;
+  const transporter = createTransport();
+  const { adminEmail, adminName, studentName, studentEmail, studentId, department, clubName, message, portalUrl } = opts;
+
+  await transporter.sendMail({
+    from: `"MU Club Portal" <${emailUser}>`,
+    to: adminEmail,
+    subject: `New Join Request for ${clubName} – MU Club Portal`,
+    html: `
+      <div style="font-family:sans-serif;max-width:520px;margin:auto;padding:32px;border:1px solid #e5e7eb;border-radius:12px;">
+        <h2 style="margin-top:0;color:#1e0b4b;">New Membership Request</h2>
+        <p>Hi <strong>${adminName}</strong>,</p>
+        <p>A student has submitted a join request for <strong>${clubName}</strong>.</p>
+
+        <table style="width:100%;border-collapse:collapse;margin:16px 0;">
+          <tr style="border-bottom:1px solid #f3f4f6;">
+            <td style="padding:8px 0;color:#6b7280;font-size:13px;width:120px;">Name</td>
+            <td style="padding:8px 0;font-weight:600;font-size:13px;">${studentName}</td>
+          </tr>
+          <tr style="border-bottom:1px solid #f3f4f6;">
+            <td style="padding:8px 0;color:#6b7280;font-size:13px;">Email</td>
+            <td style="padding:8px 0;font-size:13px;">${studentEmail}</td>
+          </tr>
+          ${studentId ? `<tr style="border-bottom:1px solid #f3f4f6;"><td style="padding:8px 0;color:#6b7280;font-size:13px;">Student ID</td><td style="padding:8px 0;font-size:13px;">${studentId}</td></tr>` : ""}
+          ${department ? `<tr style="border-bottom:1px solid #f3f4f6;"><td style="padding:8px 0;color:#6b7280;font-size:13px;">Department</td><td style="padding:8px 0;font-size:13px;">${department}</td></tr>` : ""}
+          ${message ? `<tr><td style="padding:8px 0;color:#6b7280;font-size:13px;vertical-align:top;">Message</td><td style="padding:8px 0;font-size:13px;font-style:italic;">"${message}"</td></tr>` : ""}
+        </table>
+
+        <a href="${portalUrl}"
+          style="display:inline-block;margin:16px 0;padding:12px 28px;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;text-decoration:none;border-radius:8px;font-weight:600;">
+          Review Request in Dashboard
+        </a>
+
+        <p style="color:#6b7280;font-size:13px;">Log in to your Club Admin dashboard to approve or reject this request.</p>
+        <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;" />
+        <p style="color:#9ca3af;font-size:12px;">Metropolitan University Club Management Portal</p>
+      </div>
+    `,
+  });
+}
