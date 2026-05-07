@@ -86,7 +86,7 @@ async function seed() {
   });
   console.log("[seed] Overseer: admin / admin123");
 
-  // ── CLUBS ─────────────────────────────────────────────────
+  // ── CLUBS (6 clubs) ───────────────────────────────────────
   const clubsData = [
     {
       slug: "mu-robotics",
@@ -133,6 +133,15 @@ async function seed() {
         "E-Cell provides aspiring entrepreneurs with mentorship, networking, and resources to launch their startups. We organize hackathons, pitch competitions, and founder talks.",
       accentColor: "#10b981",
     },
+    {
+      slug: "mu-literary",
+      name: "MU Literary Society",
+      category: "Academic",
+      shortDescription: "Words that inspire, stories that endure.",
+      description:
+        "The MU Literary Society fosters a love for reading, writing, and creative expression. We host book clubs, creative writing workshops, poetry slams, and publish an annual literary magazine.",
+      accentColor: "#f97316",
+    },
   ];
 
   const clubs: Record<string, any> = {};
@@ -141,7 +150,7 @@ async function seed() {
     console.log(`[seed] Club: ${cd.name}`);
   }
 
-  // ── CLUB ADMINS ───────────────────────────────────────────
+  // ── CLUB ADMINS (6 admins, one per club) ──────────────────
   const adminData = [
     {
       username: "robotics_president",
@@ -201,6 +210,18 @@ async function seed() {
       department: "Business Administration",
       batch: "2020",
       clubSlug: "mu-entrepreneurship",
+      memberRole: "president",
+    },
+    {
+      username: "literary_president",
+      password: "pass1234",
+      fullName: "Sana Mirza",
+      email: "sana@mu.edu",
+      role: "club_admin",
+      studentId: "2022-ENG-021",
+      department: "English Literature",
+      batch: "2022",
+      clubSlug: "mu-literary",
       memberRole: "president",
     },
   ];
@@ -427,7 +448,14 @@ async function seed() {
   }
 
   console.log("\n[seed] ✓ Seeding complete!");
-  console.log("[seed] Default login — overseer: admin / admin123");
+  console.log("[seed] Credentials summary:");
+  console.log("[seed]   Overseer:          admin              / admin123");
+  console.log("[seed]   Robotics Admin:    robotics_president / pass1234");
+  console.log("[seed]   Photography Admin: photo_president    / pass1234");
+  console.log("[seed]   Debate Admin:      debate_president   / pass1234");
+  console.log("[seed]   Music Admin:       music_president    / pass1234");
+  console.log("[seed]   E-Cell Admin:      ecell_president    / pass1234");
+  console.log("[seed]   Literary Admin:    literary_president / pass1234");
   process.exit(0);
 }
 
