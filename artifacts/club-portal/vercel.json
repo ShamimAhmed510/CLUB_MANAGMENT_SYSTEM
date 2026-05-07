@@ -4,7 +4,7 @@
   "buildCommand": "cd ../.. && pnpm --filter @workspace/api-zod run build && pnpm --filter @workspace/api-client-react run build && pnpm --filter @workspace/club-portal run build",
   "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/((?!assets|favicon).*)", "destination": "/index.html" }
+    { "source": "/((?!assets|favicon\\.ico).*)", "destination": "/index.html" }
   ],
   "headers": [
     {

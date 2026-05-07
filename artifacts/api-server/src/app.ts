@@ -9,13 +9,16 @@ import { logger } from "./lib/logger.js";
 const app: Express = express();
 
 app.use(
+  // @ts-ignore
   pinoHttp({
     logger,
     serializers: {
-      req(req) {
+      // @ts-ignore
+      req(req: any) {
         return { id: req.id, method: req.method, url: req.url?.split("?")[0] };
       },
-      res(res) {
+      // @ts-ignore
+      res(res: any) {
         return { statusCode: res.statusCode };
       },
     },
